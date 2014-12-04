@@ -51,7 +51,7 @@ def get_batteries
 end
 
 def run
-  save_data(get_batteries.merge(date: Time.now))
+  save_data(get_batteries.merge("date" => Time.now))
 end
 
 run

@@ -38,13 +38,16 @@ end
 def get_batteries
   batteries = {}
 
-  %w[BNBTrackpadDevice AppleBluetoothHIDKeyboard].each do |klass|
-    plist = Plist::parse_xml(`ioreg -c #{klass} -a`)
-    props = {}
-    visit plist, ["BatteryPercent", "Product"] do |key, value|
-      props[key] ||= value
+  plist = Plist::parse_xml(`ioreg -k BatteryPercent -a`)
+
+  percent = nil
+  visit plist, ["BatteryPercent", "Product"] do |key, value|
+    case key
+    when "BatteryPercent"
+      percent = value if value.is_a?(Integer)
+    when "Product"
+      batteries[value] = percent
     end
-    batteries[props["Product"]] = props["BatteryPercent"]
   end
 
   batteries
